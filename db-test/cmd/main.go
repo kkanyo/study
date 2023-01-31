@@ -7,12 +7,34 @@ import (
 )
 
 func main() {
-	db := database.DBConnect("market_db")
+	run()
+}
+
+func run() {
+	db := database.DBConnect("mydb")
 	defer db.Close()
 
-	colInfoList := database.GetColumnInfoList(db, "member")
-
-	for _, colInfo := range colInfoList {
-		fmt.Println(colInfo.Name, colInfo.Type)
+	tableInfos, err := database.GetTables(db)
+	if nil != err {
+		panic(err)
 	}
+
+	for _, tableInfo := range tableInfos {
+		fmt.Println("TABLE: ", tableInfo)
+
+		columnInfos, err := database.GetColumnInfos(db, tableInfo)
+		if nil != err {
+			panic(err)
+		}
+
+		for _, columnInfo := range columnInfos {
+			if columnInfo.Field.String != "" {
+				fmt.Print(columnInfo.Field.String, ": ")
+			} else {
+				fmt.Print("NULL: ")
+			}
+			fmt.Println(columnInfo)
+		}
+	}
+
 }
