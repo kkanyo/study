@@ -3,38 +3,84 @@
   <body>
     <div id="root"></div>
   </body>
-  <script src="https://unpkg.com/react@17.0.2/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
   <script type="text/babel">
     const root = document.getElementById("root");
 
-    let counter = 0;
-    function countUp() {
-      counter += 1;
-      // 상태가 변하므로 여기서 다시 렌더링을 해준다
-      render();
-    }
+    // let counter = 0;
+    // function countUp() {
+    //   counter += 1;
+    //   // 상태가 변하므로 여기서 다시 렌더링을 해준다
+    //   // 프로젝트가 커지면 매번 불러오는 것은 실수 가능성이 커짐
+    //   render();
+    // }
 
-    function render() {
-      // React.js는 이전 요소들을 확인하고, 바뀐 부분만 업데이트해줌
-      ReactDOM.render(<Counter />, root);
-    }
+    // function render() {
+    //   // React.js는 이전 요소들을 확인하고, 바뀐 부분만 업데이트해줌
+    //   ReactDOM.render(<Counter />, root);
+    // }
 
     function Counter() {
-      const data = React.useState(0);
       // 배열의 값을 변수로 받아옴
-      const [counter, modifier] = data;
+      // 두 번째 반환값은 상태 변화 함수
+      const [counter, setCounter] = React.useState(0);
+      const onClick = () => {
+        // 값의 변화와 리렌더링 모두 함께 수행
+        // setCounter(counter + 1);
+        // current가 현재 값이라는 것을 보장함
+        // 원하는 값을 정확히 반환해주기 위함
+        setCounter((current) => current + 1);
+      };
 
       return (
         <div>
           {/*변수를 바로 전달해줄 수 있음*/}
           <h3>Total clicks: {counter}</h3>
-          <button modifier>Click me</button>
+          <button onClick={onClick}>Click me</button>
         </div>
       );
     }
 
-    render();
+    function Converter() {
+      const [amount, setAmount] = React.useState(0);
+      const [flipped, setFlliped] = React.useState(false);
+      const onChange = (event) => {
+        setAmount(event.target.value);
+      };
+      const reset = () => setAmount(0);
+      const onFlip = () => setFlliped((current) => !current);
+      return (
+        <div>
+          <h1>Time Converter</h1>
+          <div>
+            <label htmlFor="minutes">Minutes</label>
+            <input
+              value={flipped ? amount * 60 : amount}
+              id="minutes"
+              placeholder="Minutes"
+              type="number"
+              onChange={onChange}
+              disabled={flipped === true}
+            />
+          </div>
+          <div>
+            <label htmlFor="hours">Hours</label>
+            <input
+              value={flipped ? amount : Math.round(amount / 60)}
+              id="hours"
+              placeholder="Hours"
+              type="number"
+              onChange={onChange}
+              disabled={flipped === false}
+            />
+          </div>
+          <button onClick={reset}> Reset</button>
+          <button onClick={onFlip}> Flip</button>
+        </div>
+      );
+    }
+    ReactDOM.render(<Converter />, root);
   </script>
 </html>
