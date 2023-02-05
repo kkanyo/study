@@ -7,50 +7,34 @@
   <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
   <script type="text/babel">
-    // react-dom: React libraries, packages
-    // babel standalone: convert JSX to
-
-    // JavaScript: HTML와 Js가 분리
     const root = document.getElementById("root");
 
-    // ReactJs: element를 생성하고 관리 > 캡슐화 가능
+    let counter = 0;
+    function countUp() {
+      counter += 1;
+      // 상태가 변하므로 여기서 다시 렌더링을 해준다
+      render();
+    }
 
-    const span = React.createElement(
-      "span", // HTML tag
-      { id: "name-span" }, // Property
-      "Hello, I'm span" // Context
-    );
-    //const container = React.createElement("div", null, [div, btn]); // 여러 태그를 하나로 묶어줌
+    function render() {
+      // React.js는 이전 요소들을 확인하고, 바뀐 부분만 업데이트해줌
+      ReactDOM.render(<Counter />, root);
+    }
 
-    // JSX: JavaScript 확장 문법
-    // 가시성이 좋고, HTML과 같은 규칙을 가지고 있음
-    function Title() {
+    function Counter() {
+      const data = React.useState(0);
+      // 배열의 값을 변수로 받아옴
+      const [counter, modifier] = data;
+
       return (
-        <h3 id="title" onMouseEnter={() => console.log("mouse enter")}>
-          Hello I'm a title
-        </h3>
+        <div>
+          {/*변수를 바로 전달해줄 수 있음*/}
+          <h3>Total clicks: {counter}</h3>
+          <button modifier>Click me</button>
+        </div>
       );
     }
 
-    const Button = () => (
-      <button
-        style={{
-          backgroundColor: "tomato",
-        }}
-        onClick={() => console.log("I'm clicked")}
-      >
-        Click me
-      </button>
-    );
-
-    const Container = () => (
-      // User component name은 반드시 첫글자 대문자
-      <div>
-        <Title />
-        <Button />
-      </div>
-    );
-    // 전달한 요소들을 root안에 Rendering (Convert to HTML tag)
-    ReactDOM.render(<Container />, root);
+    render();
   </script>
 </html>
