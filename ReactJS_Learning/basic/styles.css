@@ -1,0 +1,6 @@
+/* 모든 버튼에 대해서 동일한 스타일을 적용시키므로 사용하지 않음 */
+
+button {
+  color: white;
+  background-color: tomato;
+}
