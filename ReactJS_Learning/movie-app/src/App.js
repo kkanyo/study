@@ -14,6 +14,7 @@ function App() {
   };
   console.log(toDos);
   console.log(
+    // map: 각 element를 전달받아 새로운 값을 반환
     toDos.map((item, index) => (
       // 각 item을 리스트로 만들어 반환
       <li key={index}>{item}</li>
@@ -33,9 +34,7 @@ function App() {
       </form>
       <hr />
       <ur>
-        {/* map: 각 element를 전달받아 새로운 값을 반환 */}
         {toDos.map((item, index) => (
-          // 각 item을 리스트로 만들어 반환
           <li key={index}>{item}</li>
         ))}
       </ur>
