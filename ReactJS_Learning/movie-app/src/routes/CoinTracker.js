@@ -33,3 +33,5 @@ function CoinTracker() {
     </div>
   );
 }
+
+export default CoinTracker;
