@@ -1,3 +1,14 @@
+/**
+ * @description
+ * Typescript 기본 문법 연습장
+ */
+
+const Practice = () => {
+  return;
+};
+
+export default Practice;
+
 let count = 0;
 count += 1;
 // count = "Hello, world!"; // Compile error: Type 'string' is not assignable to type 'number'.
@@ -37,6 +48,10 @@ function returnNothing(): void {
 
 returnNothing();
 
+/*
+ * Interface
+ */
+
 interface Shape {
   getArea(): number; // 반드시 구현해야 함
 }
@@ -75,6 +90,7 @@ shapes.forEach((shape) => {
 const rectangle = new Rectangle(10, 5);
 console.log(rectangle.width);
 
+/* 일반 객체를 interface로 타입 설정 */
 interface Person {
   name: string;
   age?: number; // 설정하지 않아도 됨
@@ -99,13 +115,13 @@ const expert: Developer = {
 const people: Person[] = [person, expert];
 console.log(people);
 
-// 특정 타입에 별칭을 붙이는 용도
+/* Type Alias: 특정 타입에 별칭을 붙이는 용도 */
 type Player = {
   id: number;
   name?: string;
 };
 
-// Instersection(&): 두 개 이상의 타입들을 합쳐줌
+/* Instersection(&): 두 개 이상의 타입들을 합쳐줌 */
 type Monster = Player & {
   skills: string[];
 };
@@ -122,7 +138,12 @@ const slime: Monster = {
 type Color = "red" | "orange" | "yellow";
 const fontColor: Color = "red";
 
-/**
+// 일반적으로
+// 클래스와 관련된 타입의 경우, interface 사용
+// 일반 객체의 타입의 경우 type 사용
+// 일관성 있게 사용하는 것이 중요하므로 프로젝트 기반으로 작성
+
+/*
  * Generics
  */
 
@@ -133,12 +154,19 @@ function merge<T, U>(a: T, b: U): T & U {
   };
 }
 
+const merged = merge({ foo: 1 }, { bar: 1 });
+console.log(merged);
+
 function wrap<T>(param: T) {
   return {
     param,
   };
 }
 
+const wrapped = wrap(10);
+console.log(wrapped);
+
+/* type도 가능 */
 interface Items<T> {
   list: T[];
 }
