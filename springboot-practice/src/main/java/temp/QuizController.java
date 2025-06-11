@@ -1,4 +1,4 @@
-package me.kkanyo.springbootpractice;
+package temp;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

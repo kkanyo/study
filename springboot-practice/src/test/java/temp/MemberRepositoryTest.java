@@ -1,4 +1,4 @@
-package me.kkanyo.springbootpractice;
+package temp;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class MemberRepositoryTest {
         memberRepository.deleteAll();
     }
 
-    @Sql("/insert-members.sql")
+    @Sql("/temp/insert-members.sql")
     @Test
     void getAllMembers() {
         // when
@@ -30,7 +30,7 @@ class MemberRepositoryTest {
         assertThat(members.size()).isEqualTo(3);
     }
 
-    @Sql("/insert-members.sql")
+    @Sql("/temp/insert-members.sql")
     @Test
     void getMemberById() {
         // when
@@ -40,7 +40,7 @@ class MemberRepositoryTest {
         assertThat(member.getName()).isEqualTo("B");
     }
 
-    @Sql("/insert-members.sql")
+    @Sql("/temp/insert-members.sql")
     @Test
     void getMemberByName() {
         // when
@@ -76,7 +76,7 @@ class MemberRepositoryTest {
         assertThat(memberRepository.findAll().size()).isEqualTo(2);
     }
 
-    @Sql("/insert-members.sql")
+    @Sql("/temp/insert-members.sql")
     @Test
     void deleteMemberById() {
         // when
@@ -86,7 +86,7 @@ class MemberRepositoryTest {
         assertThat(memberRepository.findById(2L).isEmpty()).isTrue();
     }
 
-    @Sql("/insert-members.sql")
+    @Sql("/temp/insert-members.sql")
     @Test
     void deleteMemberAll() {
         // when
@@ -97,7 +97,7 @@ class MemberRepositoryTest {
     }
 
     // @DataJpaTest 애너테이션에서 @Transactional 애너테이션을 포함하고 있다.
-    @Sql("/insert-members.sql")
+    @Sql("/temp/insert-members.sql")
     @Test
     void update() {
         // given

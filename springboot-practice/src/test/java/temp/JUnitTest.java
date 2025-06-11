@@ -1,3 +1,5 @@
+package temp;
+
 import org.junit.jupiter.api.*;
 
 public class JUnitTest {

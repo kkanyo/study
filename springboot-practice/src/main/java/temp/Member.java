@@ -1,4 +1,4 @@
-package me.kkanyo.springbootpractice;
+package temp;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
