@@ -6,6 +6,8 @@ import me.kkanyo.springbootpractice.dto.AddArticleRequest;
 import me.kkanyo.springbootpractice.repository.BlogRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor    // final이 붙거나 @NotNull이 붙은 빌드의 생성자 추가
 @Service    // 빈으로 등록
 public class BlogService {
@@ -17,5 +19,10 @@ public class BlogService {
     // AddArticleRequest 클래스에 저장된 값을들 article 데이터베이스에 저장한다.
     public Article save(AddArticleRequest request) {
         return blogRepository.save(request.toEntity());
+    }
+
+    /// 블로그 글 전체 조회
+    public List<Article> findAll() {
+        return blogRepository.findAll();
     }
 }
