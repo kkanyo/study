@@ -21,7 +21,7 @@ public class BlogService {
         return blogRepository.save(request.toEntity());
     }
 
-    /// 블로그 글 전체 조회
+    // 블로그 글 전체 조회
     public List<Article> findAll() {
         return blogRepository.findAll();
     }
@@ -30,5 +30,10 @@ public class BlogService {
     public Article findById(long id) {
         return blogRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+    }
+
+    // 블로그 글 삭제
+    public void delete(long id) {
+        blogRepository.deleteById(id);
     }
 }
