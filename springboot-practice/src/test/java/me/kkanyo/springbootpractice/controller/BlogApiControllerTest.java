@@ -69,7 +69,6 @@ class BlogApiControllerTest {
         result.andExpect(status().isCreated());
 
         List<Article> articles = blogRepository.findAll();
-
         assertThat(articles.size()).isEqualTo(1);
         assertThat(articles.getFirst().getTitle()).isEqualTo(title);
         assertThat(articles.getFirst().getContent()).isEqualTo(content);
