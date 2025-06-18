@@ -25,13 +25,17 @@ public class Article {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "author", nullable = false)
+    private String author;
+
     @Column(name = "content", nullable = false)
     private String content;
     
     @Builder    // 빌더 패턴으로 객체 생성
-    public Article(String title, String content) {
+    public Article(String title, String content, String author) {
         this.title = title;
         this.content = content;
+        this.author = author;
     }
 
     public void update(String title, String content) {
