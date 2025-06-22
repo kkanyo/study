@@ -6,9 +6,6 @@ spring:
       hibernate:
         format_sql: true
     defer-datasource-initialization: true
-  datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
   h2:
     console:
       enabled: true
@@ -25,4 +22,4 @@ spring:
 
 jwt:
   issuer: springboot@gmail.com
-  secret_key: study-springboot
+  secret_key:

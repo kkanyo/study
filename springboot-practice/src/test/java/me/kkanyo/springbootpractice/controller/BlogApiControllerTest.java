@@ -7,7 +7,6 @@ import me.kkanyo.springbootpractice.dto.AddArticleRequest;
 import me.kkanyo.springbootpractice.dto.UpdateArticleRequest;
 import me.kkanyo.springbootpractice.repository.BlogRepository;
 import me.kkanyo.springbootpractice.repository.UserRepository;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.PipedReader;
 import java.security.Principal;
 import java.util.List;
 
@@ -100,8 +98,8 @@ class BlogApiControllerTest {
 
         List<Article> articles = blogRepository.findAll();
         assertThat(articles.size()).isEqualTo(1);
-        assertThat(articles.getFirst().getTitle()).isEqualTo(title);
-        assertThat(articles.getFirst().getContent()).isEqualTo(content);
+        assertThat(articles.get(0).getTitle()).isEqualTo(title);
+        assertThat(articles.get(0).getContent()).isEqualTo(content);
     }
 
     @DisplayName("findAllArticles: 블로그 글 목록 조회에 성공한다.")
