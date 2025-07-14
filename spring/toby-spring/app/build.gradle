@@ -23,6 +23,14 @@ dependencies {
 
     // This dependency is used by the application.
     implementation libs.guava
+
+    compileOnly("org.projectlombok:lombok:1.18.38")
+	annotationProcessor("org.projectlombok:lombok:1.18.38")
+	
+	testCompileOnly("org.projectlombok:lombok:1.18.38")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+
+    implementation("com.mysql:mysql-connector-j:9.3.0")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
