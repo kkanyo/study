@@ -5,11 +5,6 @@ package tobyspring;
 
 import java.sql.SQLException;
 
-import tobyspring.user.dao.ConnectionMaker;
-import tobyspring.user.dao.DConnectionMaker;
-import tobyspring.user.dao.UserDao;
-import tobyspring.user.domain.User;
-
 public class App {
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         

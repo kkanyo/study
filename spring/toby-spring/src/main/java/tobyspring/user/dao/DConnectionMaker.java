@@ -12,6 +12,6 @@ public class DConnectionMaker implements ConnectionMaker{
         Class.forName("com.mysql.cj.jdbc.Driver");
 
         return DriverManager.getConnection(
-            "jdbc:mysql://localhost/toby_spring", "root", "password");
+            "jdbc:mysql://localhost/toby-spring", "root", "Rjseka9574#");
     }
 }
