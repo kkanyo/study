@@ -11,14 +11,19 @@ public class UserDao {
     // 상속으로 분리가 가능하지만, 이중 상속이 불가능하여 이후 확장과 관련하여 단점을 가진다.
     // public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 
-    private ConnectionMaker connectionMaker;
+    private ConnectionMaker connectionMaker;    // 초기에 설정하면 사용 중에는 바뀌지 않는 읽기전용 인스턴스 변수
+    // 매번 새로운 값으로 바뀌는 정보를 담은 인스턴스 변수 (멀티 스레드 환경에서 문제가 될 수 있다.)
 
     // 구체적인 클래스를 직접 사용하여 의존성을 가지게 된다.
     // public UserDao() {
     //     connectionMaker = new DConnectionMaker();
     // }
 
-    public UserDao(ConnectionMaker connectionMaker) {
+    // public UserDao(ConnectionMaker connectionMaker) {
+    //     this.connectionMaker = connectionMaker;
+    // }
+
+    public void setConnectionMaker(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker;
     }
 
