@@ -33,6 +33,7 @@ dependencies {
     implementation("com.mysql:mysql-connector-j:9.3.0")
 
     implementation("org.springframework:spring-context:6.2.8")
+    implementation("org.springframework:spring-jdbc:6.2.8")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
