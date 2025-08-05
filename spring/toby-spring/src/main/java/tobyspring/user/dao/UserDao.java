@@ -29,52 +29,248 @@ public class UserDao {
     // }
 
     private DataSource dataSource;
-
+    private JdbcContext jdbcContext;
+    
     public void setDataSource(DataSource dataSource) {
+        /*
+         * 굳이 인터페이스를 사용하지 않아도 될 만큼 긴밀한 관계를 갖는 DAO 클래스와 JdbcContext를
+         * 어색하게 따로 빈으로 분리하지 않고 내부에서 직접 만들어 사용하면서
+         * 다른 오브젝트에 대한 DI를 적용할 수 있다는 장점이 있다.
+         * 하지만 JdbcContext를 여러 오브젝트가 사용하더라도 싱글톤으로 만들 수 없고,
+         * DI 작업을 위한 부가적인 코드가 필요하다는 단점도 있다.
+         */
+
+        // jdbcContext 생성(IoC)
+        this.jdbcContext = new JdbcContext();
+
+        // DI
+        jdbcContext.setDataSource(dataSource);
+
         this.dataSource = dataSource;
     }
+    
+    /*
+     * 인터페이스를 사용하지 않는 클래스와의 의존관계이지만
+     * 스프링의 DI를 이용하기 위해 빈으로 등록해서 사용하는 방법은
+     * 오브젝트 사이의 실제 의존관계가 설정파일에 명확하게 드러난다는 장점이 있다.
+     * 하지만 DI의 근본적인 원칙에 부합하지 않는 구체적인 클래스와의 관계가
+     * 설정에 직접 노출된다는 단점이 있다.
+     */
+    // jdbcContext를 DI로 주입받도록 만든다.
+    // public void setJdbcContext(JdbcContext jdbcContext) {
+    //     this.jdbcContext = jdbcContext;
+    // }
 
-    public void add(User user) throws ClassNotFoundException, SQLException {
-        // 코드 중복 및 생산성 문제가 발생하므로 좋지 않은 방식이다.
+    // // DI 적용, 클라이언트가 컨텍스트를 호출할 때 전략 파라미터를 넘겨준다.
+    // public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
+    //     Connection c = null;
+    //     PreparedStatement ps = null;
+
+    //     try {
+    //         c = dataSource.getConnection();
+
+    //         ps = stmt.makeStatement(c);
+
+    //         ps.executeUpdate();
+    //     } catch (SQLException e) {
+    //         throw e;
+    //     } finally {
+    //         if (ps != null) {
+    //             try {
+    //                 ps.close();
+    //             } catch (SQLException e) {}
+    //         }
+
+    //         if (c != null) {
+    //             try {
+    //                 c.close();
+    //             } catch (SQLException e) {}
+    //         }
+    //     }
+    // }
+
+    public void add(final User user) throws SQLException {
+        // // 코드 중복 및 생산성 문제가 발생하므로 좋지 않은 방식이다.
         // Class.forName("com.mysql.cj.jdbc.Driver");
         // Connection c = DriverManager.getConnection(
         //     "jdbc:mysql://localhost/toby_spring", "root", "password");
 
-        Connection c = dataSource.getConnection();
+        // // 로컬 클래스
+        // // 내부 클래스에서 외부의 변수를 사용할 때 외부 변수는 반드시 final로 선언해줘야 한다.
+        // class AddStatement implements StatementStrategy {
+        //     @Override
+        //     public PreparedStatement makeStatement(Connection c) throws SQLException {
+        //         PreparedStatement ps = c.prepareStatement("INSERT INTO user(id, name, password) VALUES (?, ?, ?)");
+                
+        //         ps.setString(1, user.getId());
+        //         ps.setString(2, user.getName());
+        //         ps.setString(3, user.getPassword());
 
-        PreparedStatement ps = c.prepareStatement(
-            "INSERT INTO user(id, name, password) VALUES(?, ?, ?)"
-        );
-        ps.setString(1, user.getId());
-        ps.setString(2, user.getName());
-        ps.setString(3, user.getPassword());
+        //         return ps;
+        //     }
+        // }
 
-        ps.executeUpdate();
-        
-        ps.close();
-        c.close();
+        // StatementStrategy st = new AddStatement();
+
+        // // 익명 클래스
+        // jdbcContextWithStatementStrategy(
+        // this.jdbcContext.workWithStatementStrategy(
+        //     new StatementStrategy() {
+        //         public PreparedStatement makeStatement(Connection c) throws SQLException {
+        //             PreparedStatement ps = c.prepareStatement("INSERT INTO user(id, name, password) VALUES (?, ?, ?)");
+
+        //             ps.setString(1, user.getId());
+        //             ps.setString(2, user.getName());
+        //             ps.setString(3, user.getPassword());
+
+        //             return ps;
+        //         }
+        //     }
+        // );
+
+        this.jdbcContext.executeSql("INSERT INTO user(id, name, password) VALUES (?, ?, ?)", 
+            user.getId(), 
+            user.getName(), 
+            user.getPassword());
     }
 
-    public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = dataSource.getConnection();
+    public User get(String id) throws SQLException {
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        User user = null;
 
-        PreparedStatement ps = c.prepareStatement(
-            "SELECT * FROM user WHERE id = ?"
-        );
-        ps.setString(1, id);
+        try {
+            c = dataSource.getConnection();
+            ps = c.prepareStatement(
+                "SELECT * FROM user WHERE id = ?"
+            );
+            ps.setString(1, id);
+            rs = ps.executeQuery();
 
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        User user = new User();
-        user.setId(rs.getString("id"));
-        user.setName(rs.getString("name"));
-        user.setPassword(rs.getString("password"));
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getString("id"));
+                user.setName(rs.getString("name"));
+                user.setPassword(rs.getString("password"));
+            }
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {}
+            }
 
-        rs.close();
-        ps.close();
-        c.close();
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {}
+            }
+
+            if (c != null) {
+                try {
+                    c.close();
+                } catch (SQLException e) {}
+            }
+        }
 
         return user;
     }
 
+    // 반복되는 코드가 많아진다.
+    // public void deleteAll() throws SQLException {
+    //     Connection c = null;
+    //     PreparedStatement ps = null;
+
+    //     try {
+    //         c = dataSource.getConnection();
+            
+    //         // ps = c.prepareStatement("delete from user");    // 변하는 부분
+    //         // ps = makeStatement(c);
+    //         StatementStrategy strategy = new DeleteAllStatement();  // 특정 구현 클래스과 관계가 결정되어 있다는 점이 문제
+    //         ps = strategy.makeStatement(c);
+            
+    //         ps.executeUpdate();
+    //     } catch (SQLException e) {
+    //         throw e;
+    //     } finally {
+    //         if (ps != null) {
+    //             // try/catch를 사용하지 않으면 ps.close()에서 예외가 발생했을 때 c.close()가 호출되지 않는 문제가 발생한다.
+    //             try {
+    //                 ps.close();
+    //             } catch (SQLException e) {}
+    //         }
+
+    //         if (c != null) {
+    //             try {
+    //                 c.close();
+    //             } catch (SQLException e) {}
+    //         }
+    //     }
+    // }
+
+    public void deleteAll() throws SQLException {
+        // StatementStrategy st = new DeleteAllStatement();
+        // jdbcContextWithStatementStrategy(st);
+
+        // jdbcContextWithStatementStrategy(
+        // this.jdbcContext.workWithStatementStrategy(
+        //     new StatementStrategy() {
+        //         public PreparedStatement makeStatement(Connection c) throws SQLException {
+        //             PreparedStatement ps = c.prepareStatement("DELETE FROM user");
+                    
+        //             return ps;
+        //         }
+        //     }
+        // );
+
+        this.jdbcContext.executeSql("DELETE FROM user");
+    }
+
+    // 분리시킨 메소드를 다른 곳에서 재사용할 수 없다.
+    // private PreparedStatement makeStatement(Connection c) throws SQLException{
+    //     return c.prepareStatement("delete from user");
+    // }
+
+    public int getCount() throws SQLException {
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            c = dataSource.getConnection();
+            
+            ps = c.prepareStatement("select count(*) from user");
+            
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {}
+            }
+
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {}
+            }
+
+            if (c != null) {
+                try {
+                    c.close();
+                } catch (SQLException e) {}
+            }
+        }
+
+        return 0;
+    }
 }

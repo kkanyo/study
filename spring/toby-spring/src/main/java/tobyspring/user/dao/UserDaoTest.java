@@ -23,6 +23,10 @@ public class UserDaoTest {
         ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
         UserDao dao = context.getBean("userDao", UserDao.class);
 
+        dao.deleteAll();
+
+        System.out.println("count: " + dao.getCount());
+
         User user = new User();
         user.setId("kkanyo");
         user.setName("서관영");
@@ -36,6 +40,8 @@ public class UserDaoTest {
         System.out.println(user2.getName());
         System.out.println(user2.getPassword());
         System.out.println(user2.getId() + " 조회 성공");
+
+        System.out.println("count: " + dao.getCount());
     }
 
     static public void objectEqualTest() {

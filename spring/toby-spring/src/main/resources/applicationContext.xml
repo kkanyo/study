@@ -11,8 +11,12 @@
     </bean>
     <bean id="userDao" class="tobyspring.user.dao.UserDao">
         <property name="dataSource" ref="dataSource"/>
+        <!-- <property name="jdbcContext" ref="jdbcContext"/> -->
     </bean>
-    
+    <!-- <bean id="jdbcContext" class="tobyspring.user.dao.JdbcContext">
+        <property name="dataSource" ref="dataSource"/>
+    </bean> -->
+        
     <!-- <bean id="realConnectionMaker" class="tobyspring.user.dao.DConnectionMaker"/>
     <bean id="connectionMaker" class="tobyspring.user.dao.CountingConnectionMaker">
         <property name="realConnectionMaker" ref="realConnectionMaker"/>
