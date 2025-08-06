@@ -1,11 +1,13 @@
 package tobyspring.user.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import tobyspring.user.domain.User;
 
@@ -28,27 +30,27 @@ public class UserDao {
     //     this.connectionMaker = connectionMaker;
     // }
 
-    private DataSource dataSource;
-    private JdbcContext jdbcContext;
+    // private DataSource dataSource;
+    // private JdbcContext jdbcContext;
     
-    public void setDataSource(DataSource dataSource) {
-        /*
-         * 굳이 인터페이스를 사용하지 않아도 될 만큼 긴밀한 관계를 갖는 DAO 클래스와 JdbcContext를
-         * 어색하게 따로 빈으로 분리하지 않고 내부에서 직접 만들어 사용하면서
-         * 다른 오브젝트에 대한 DI를 적용할 수 있다는 장점이 있다.
-         * 하지만 JdbcContext를 여러 오브젝트가 사용하더라도 싱글톤으로 만들 수 없고,
-         * DI 작업을 위한 부가적인 코드가 필요하다는 단점도 있다.
-         */
-
-        // jdbcContext 생성(IoC)
-        this.jdbcContext = new JdbcContext();
-
-        // DI
-        jdbcContext.setDataSource(dataSource);
-
-        this.dataSource = dataSource;
-    }
-    
+    // public void setDataSource(DataSource dataSource) {
+        //     /*
+        //      * 굳이 인터페이스를 사용하지 않아도 될 만큼 긴밀한 관계를 갖는 DAO 클래스와 JdbcContext를
+        //      * 어색하게 따로 빈으로 분리하지 않고 내부에서 직접 만들어 사용하면서
+        //      * 다른 오브젝트에 대한 DI를 적용할 수 있다는 장점이 있다.
+        //      * 하지만 JdbcContext를 여러 오브젝트가 사용하더라도 싱글톤으로 만들 수 없고,
+        //      * DI 작업을 위한 부가적인 코드가 필요하다는 단점도 있다.
+        //      */
+        
+        //     // jdbcContext 생성(IoC)
+        //     this.jdbcContext = new JdbcContext();
+        
+        //     // DI
+        //     jdbcContext.setDataSource(dataSource);
+        
+        //     this.dataSource = dataSource;
+        // }
+        
     /*
      * 인터페이스를 사용하지 않는 클래스와의 의존관계이지만
      * 스프링의 DI를 이용하기 위해 빈으로 등록해서 사용하는 방법은
@@ -89,6 +91,23 @@ public class UserDao {
     //     }
     // }
 
+    private JdbcTemplate jdbcTemplate;
+
+    public void setJdbcTemplate(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
+    private RowMapper<User> userMapper = new RowMapper<User>() {
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            // RoeMapper가 호출되는 시점에서 ResultSet은 첫 번째 row를 가리키고 있으므로 다시 rs.next()를 호출할 필요가 없다.
+            User user = new User();
+            user.setId(rs.getString("id"));
+            user.setName(rs.getString("name"));
+            user.setPassword(rs.getString("password"));
+            return user;
+        }
+    };
+
     public void add(final User user) throws SQLException {
         // // 코드 중복 및 생산성 문제가 발생하므로 좋지 않은 방식이다.
         // Class.forName("com.mysql.cj.jdbc.Driver");
@@ -128,55 +147,28 @@ public class UserDao {
         //     }
         // );
 
-        this.jdbcContext.executeSql("INSERT INTO user(id, name, password) VALUES (?, ?, ?)", 
-            user.getId(), 
-            user.getName(), 
+        // this.jdbcContext.executeSql("INSERT INTO user(id, name, password) VALUES (?, ?, ?)", 
+        //     user.getId(), 
+        //     user.getName(), 
+        //     user.getPassword());
+
+        this.jdbcTemplate.update("INSERT INTO user(id, name, password) VALUES (?, ?, ?)",
+            user.getId(),
+            user.getName(),
             user.getPassword());
     }
 
     public User get(String id) throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        User user = null;
+        // 실행해서 받은 row의 개수가 하나가 아니라면 예외를 던지로고 처리되어 있다. (EmptyResultDataAccessException)
+        return this.jdbcTemplate.queryForObject("SELECT * FROM user WHERE id = ?",
+            new Object[] {id},
+            new int[] {java.sql.Types.CHAR},
+            this.userMapper);
+    }
 
-        try {
-            c = dataSource.getConnection();
-            ps = c.prepareStatement(
-                "SELECT * FROM user WHERE id = ?"
-            );
-            ps.setString(1, id);
-            rs = ps.executeQuery();
-
-            if (rs.next()) {
-                user = new User();
-                user.setId(rs.getString("id"));
-                user.setName(rs.getString("name"));
-                user.setPassword(rs.getString("password"));
-            }
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {}
-            }
-
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {}
-            }
-
-            if (c != null) {
-                try {
-                    c.close();
-                } catch (SQLException e) {}
-            }
-        }
-
-        return user;
+    public List<User> getAll() throws SQLException {
+        return this.jdbcTemplate.query("SELECT * FROM user ORDER BY id",
+            this.userMapper);
     }
 
     // 반복되는 코드가 많아진다.
@@ -226,7 +218,17 @@ public class UserDao {
         //     }
         // );
 
-        this.jdbcContext.executeSql("DELETE FROM user");
+        // this.jdbcContext.executeSql("DELETE FROM user");
+
+        // this.jdbcTemplate.update(
+        //     new PreparedStatementCreator() {
+        //         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+        //             return con.prepareStatement("DELETE FROM user");
+        //         }
+        //     }
+        // );
+
+        this.jdbcTemplate.update("DELETE FROM user");
     }
 
     // 분리시킨 메소드를 다른 곳에서 재사용할 수 없다.
@@ -235,42 +237,18 @@ public class UserDao {
     // }
 
     public int getCount() throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+        // return jdbcTemplate.query(new PreparedStatementCreator() {
+        //     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+        //         return con.prepareStatement("SELECT count(*) FROM user");
+        //     }
+        // }, new ResultSetExtractor<Integer>() {
+        //     public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+        //         rs.next();
 
-        try {
-            c = dataSource.getConnection();
-            
-            ps = c.prepareStatement("select count(*) from user");
-            
-            rs = ps.executeQuery();
+        //         return rs.getInt(1);
+        //     }
+        // });
 
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {}
-            }
-
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {}
-            }
-
-            if (c != null) {
-                try {
-                    c.close();
-                } catch (SQLException e) {}
-            }
-        }
-
-        return 0;
+        return this.jdbcTemplate.queryForObject("SELECT count(*) FROM user", Integer.class);
     }
 }

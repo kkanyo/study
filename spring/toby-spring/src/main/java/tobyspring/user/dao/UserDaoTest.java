@@ -9,19 +9,16 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 import tobyspring.user.domain.User;
 
 public class UserDaoTest {
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        dbConnectionTest();
-    }
-
-    static public void dbConnectionTest() throws ClassNotFoundException, SQLException {
+    ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+    UserDao dao = context.getBean("userDao", UserDao.class);
+    
+    public void dbConnectionTest() throws ClassNotFoundException, SQLException {
         // UserDao와 ConnectionMaker 구현 클래스와의 런타임 오브젝트 의존 관계를 설정하는 책임을 담당해야 한다.
         // ConnectionMaker connectionMaker = new DConnectionMaker();
         
         // UserDao dao = new UserDao(connectionMaker);
 
         // ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
-        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
-        UserDao dao = context.getBean("userDao", UserDao.class);
 
         dao.deleteAll();
 
@@ -44,7 +41,7 @@ public class UserDaoTest {
         System.out.println("count: " + dao.getCount());
     }
 
-    static public void objectEqualTest() {
+    public void objectEqualTest() {
         DaoFactory daoFactory = new DaoFactory();
         UserDao dao1 = daoFactory.userDao();
         UserDao dao2 = daoFactory.userDao();
