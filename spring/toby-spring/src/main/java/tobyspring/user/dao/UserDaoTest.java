@@ -1,18 +1,17 @@
 package tobyspring.user.dao;
 
-import java.sql.SQLException;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 import tobyspring.user.domain.User;
 
+@Deprecated
 public class UserDaoTest {
     ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
     UserDao dao = context.getBean("userDao", UserDao.class);
     
-    public void dbConnectionTest() throws ClassNotFoundException, SQLException {
+    public void dbConnectionTest() {
         // UserDao와 ConnectionMaker 구현 클래스와의 런타임 오브젝트 의존 관계를 설정하는 책임을 담당해야 한다.
         // ConnectionMaker connectionMaker = new DConnectionMaker();
         

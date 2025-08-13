@@ -3,6 +3,7 @@ package tobyspring.user.dao;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+@Deprecated
 public class CountingConnectionMaker implements ConnectionMaker {
     int counter = 0;
     private ConnectionMaker realConnectionMaker;

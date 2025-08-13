@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+@Deprecated
 public class UserDaoConnectionCountingTest {
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(CountingDaoFactory.class);

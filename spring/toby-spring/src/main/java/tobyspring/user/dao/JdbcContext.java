@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+@Deprecated
 public class JdbcContext {
     private DataSource dataSource;
 
