@@ -10,19 +10,13 @@
         <property name="password" value="password"/>
     </bean>
     <bean id="userDao" class="tobyspring.user.dao.UserDaoJdbc">
-        <!-- <property name="dataSource" ref="dataSource"/> -->
-        <!-- <property name="jdbcContext" ref="jdbcContext"/> -->
         <property name="jdbcTemplate" ref="dataSource"/>
     </bean>
-    <!-- <bean id="jdbcContext" class="tobyspring.user.dao.JdbcContext">
-        <property name="dataSource" ref="dataSource"/>
-    </bean> -->
-        
-    <!-- <bean id="realConnectionMaker" class="tobyspring.user.dao.DConnectionMaker"/>
-    <bean id="connectionMaker" class="tobyspring.user.dao.CountingConnectionMaker">
-        <property name="realConnectionMaker" ref="realConnectionMaker"/>
+    <bean id="userLevelUpgradePolicy" class="tobyspring.user.service.UserLevelUpgradeEvent">
     </bean>
-    <bean id="userDao" class="tobyspring.user.dao.UserDao">
-        <property name="connectionMaker" ref="connectionMaker"/>
-    </bean> -->
+
+    <bean id="userService" class="tobyspring.user.service.UserService">
+        <property name="userDao" ref="userDao" />
+        <property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy"/>
+    </bean>
 </beans>
