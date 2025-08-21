@@ -7,7 +7,7 @@ public class UserLevelUpgradeEvent implements UserLevelUpgradePolicy {
     public static final int MIN_LOGCOUNT_FOR_SILVER = 25;
     public static final int MIN_RECOMMEND_FOR_GOLD = 15;
 
-        public void upgradeLevel(User user) {
+    public void upgradeLevel(User user) {
         user.upgradeLevel();
     }
 

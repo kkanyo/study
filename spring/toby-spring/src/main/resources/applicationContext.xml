@@ -12,10 +12,11 @@
     <bean id="userDao" class="tobyspring.user.dao.UserDaoJdbc">
         <property name="jdbcTemplate" ref="dataSource"/>
     </bean>
-    <bean id="userLevelUpgradePolicy" class="tobyspring.user.service.UserLevelUpgradeEvent">
+    <bean id="userLevelUpgradePolicy" class="tobyspring.user.service.UserLevelUpgrade">
     </bean>
 
     <bean id="userService" class="tobyspring.user.service.UserService">
+        <property name="dataSource" ref="dataSource" />
         <property name="userDao" ref="userDao" />
         <property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy"/>
     </bean>
