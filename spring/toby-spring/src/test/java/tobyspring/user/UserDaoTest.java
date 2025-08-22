@@ -82,10 +82,10 @@ public class UserDaoTest {
         assertThat(user1.getRecommend()).isEqualTo(user2.getRecommend());
     }
 
-        @Test
-        public void count() {
-            dao.deleteAll();
-            assertThat(dao.getCount()).isEqualTo(0);
+    @Test
+    public void count() {
+        dao.deleteAll();
+        assertThat(dao.getCount()).isEqualTo(0);
 
         assertThrows(DuplicateKeyException.class, () -> {
             dao.add(user1);
