@@ -33,7 +33,9 @@ dependencies {
     implementation("com.mysql:mysql-connector-j:9.3.0")
 
     implementation("org.springframework:spring-context:6.2.8")
+    implementation("org.springframework:spring-context-support:6.2.8")
     implementation("org.springframework:spring-jdbc:6.2.8")
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
 
     testImplementation("org.springframework:spring-test:6.2.8")
     testImplementation("org.assertj:assertj-core:3.24.2")

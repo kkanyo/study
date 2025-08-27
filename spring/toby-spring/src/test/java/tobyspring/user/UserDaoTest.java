@@ -42,9 +42,9 @@ public class UserDaoTest {
         dao = context.getBean("userDao", UserDao.class);
         dataSource = context.getBean("dataSource", SimpleDriverDataSource.class);
 
-        user1 = new User("kkanyo", "서관영", "spring",  Level.BASIC, 1, 0);
-        user2 = new User("cheshire", "CL", "RN",  Level.SILVER, 55, 10);
-        user3 = new User("formidable", "CV", "RN",  Level.GOLD, 100, 40);
+        user1 = new User("kkanyo", "서관영", "spring",  Level.BASIC, 1, 0, "kkanyo33@gmail.com");
+        user2 = new User("cheshire", "CL", "RN",  Level.SILVER, 55, 10, "cheshire@azurlane.manju");
+        user3 = new User("formidable", "CV", "RN",  Level.GOLD, 100, 40, "formidable@azurlane.manju");
     }
     
     @Test

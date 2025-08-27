@@ -2,6 +2,8 @@ package tobyspring.user.service;
 
 import java.util.List;
 
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -15,9 +17,14 @@ public class UserService {
     UserLevelUpgradePolicy userLevelUpgradePolicy;
     // private DataSource dataSource;
     private PlatformTransactionManager transactionManager;  // 스프링이 제공하는 트랜잭션 경계설정을 위한 추상 인터페이스
+    private MailSender mailSender;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    public void setMailSender(MailSender mailSender) {
+        this.mailSender = mailSender;
     }
     
     public void setUserLevelUpgradePolicy(UserLevelUpgradePolicy userLevelUpgradePolicy) {
@@ -93,6 +100,7 @@ public class UserService {
                     // JdbcTemplate의 메소드에서는 직접 DB 커넥션을 만드는 대신
                     // 트랜잭션 동기화 저장소에 들어 있는 DB 커넥션을 가져와서 사용한다.
                     userDao.update(user);
+                    sendUpgradeEmail(user);
                 }
             }
 
@@ -111,5 +119,15 @@ public class UserService {
         //     TransactionSynchronizationManager.unbindResource(dataSource);
         //     TransactionSynchronizationManager.clearSynchronization();
         // }
+    }
+
+    private void sendUpgradeEmail(User user) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(user.getEmail());
+        mailMessage.setFrom("tjrhks12@naver.com");
+        mailMessage.setSubject("Upgrdae 안내");
+        mailMessage.setText(user.getId() + "님의 등급이 " + user.getLevel().name() + "로 업그레이드 되었습니다.");
+        
+        mailSender.send(mailMessage);
     }
 }
