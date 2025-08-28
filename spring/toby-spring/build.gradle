@@ -39,6 +39,7 @@ dependencies {
 
     testImplementation("org.springframework:spring-test:6.2.8")
     testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.mockito:mockito-core:5.+")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
