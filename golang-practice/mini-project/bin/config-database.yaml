@@ -1,6 +1,0 @@
-config-type: database
-
-database_type: mysql
-database_user: root
-database_password: '2630'
-database_host: '127.0.0.1:3306'
