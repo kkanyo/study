@@ -30,10 +30,11 @@
         </property>
     </bean>
 
-    <bean id="userService" class="tobyspring.user.service.UserServiceTx">
-        <!-- <property name="dataSource" ref="dataSource" /> -->
-        <property name="userService" ref="userServiceImpl" />
-        <property name="transactionManager" ref="transactionManager" />
+    <bean id="userService" class="tobyspring.user.service.TxProxyFactoryBean">
+        <property name="target" ref="userServiceImpl"/>
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="pattern" value="upgradeLevels"/>
+        <property name="serviceInterface" value="tobyspring.user.service.UserService"/>
     </bean>
     <bean id="userServiceImpl" class="tobyspring.user.service.UserServiceImpl">
         <property name="userDao" ref="userDao" />

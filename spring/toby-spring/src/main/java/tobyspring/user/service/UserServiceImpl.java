@@ -5,26 +5,20 @@ import java.util.List;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import tobyspring.user.dao.UserDao;
 import tobyspring.user.domain.Level;
 import tobyspring.user.domain.User;
 
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     UserDao userDao;
     UserLevelUpgradePolicy userLevelUpgradePolicy;
     MailSender mailSender;
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
-    public void setMailSender(MailSender mailSender) {
-        this.mailSender = mailSender;
-    }
-    
-    public void setUserLevelUpgradePolicy(UserLevelUpgradePolicy userLevelUpgradePolicy) {
-        this.userLevelUpgradePolicy = userLevelUpgradePolicy;
-    }
 
     public void add(User user) {
         if (user.getLevel() == null) {

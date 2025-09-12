@@ -21,7 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
@@ -61,23 +63,13 @@ public class UserServiceTest {
 
     private long startTime;
 
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    UserServiceImpl userServiceImpl;
-
-    @Autowired
-    UserDao userDao;
-
-    @Autowired
-    DataSource dataSource;
-
-    @Autowired
-    PlatformTransactionManager transactionManager;
-
-    @Autowired
-    MailSender mailSender;
+    @Autowired ApplicationContext context;
+    @Autowired UserService userService;
+    @Autowired UserServiceImpl userServiceImpl;
+    @Autowired UserDao userDao;
+    @Autowired DataSource dataSource;
+    @Autowired PlatformTransactionManager transactionManager;
+    @Autowired MailSender mailSender;
 
     List<User> users;
 
@@ -171,18 +163,24 @@ public class UserServiceTest {
     }
 
     @Test
+    @DirtiesContext
     public void upgradeAllOrNothing() throws Exception {
         UserLevelUpgradePolicy testUserLevelUpgradePolicy = new TestUserLevelUpgrade(users.get(3).getId());
         userServiceImpl.setUserLevelUpgradePolicy(testUserLevelUpgradePolicy);
         
-        userDao.deleteAll();
+        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
+        txProxyFactoryBean.setTarget(userServiceImpl);       
+
+        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
+
+        userDao.deleteAll(); 
 
         for (User user : users) {
             userDao.add(user);
         }
 
         try {
-            userService.upgradeLevels();
+            txUserService.upgradeLevels();
             fail("TestUserServiceException expected");
         }
         catch (TestUserServiceException e) {}
