@@ -10,19 +10,23 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import tobyspring.user.config.UserDaoConfig;
 import tobyspring.user.dao.UserDao;
 import tobyspring.user.domain.Level;
 import tobyspring.user.domain.User;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = UserDaoConfig.class)
 public class UserDaoTest {
     ApplicationContext context = null;
     
@@ -38,10 +42,6 @@ public class UserDaoTest {
 
     @BeforeEach
     public void setUp() {
-        context = new GenericXmlApplicationContext("applicationContext.xml");
-        dao = context.getBean("userDao", UserDao.class);
-        dataSource = context.getBean("dataSource", SimpleDriverDataSource.class);
-
         user1 = new User("kkanyo", "서관영", "spring",  Level.BASIC, 1, 0, "kkanyo33@gmail.com");
         user2 = new User("cheshire", "CL", "RN",  Level.SILVER, 55, 10, "cheshire@azurlane.manju");
         user3 = new User("formidable", "CV", "RN",  Level.GOLD, 100, 40, "formidable@azurlane.manju");
@@ -86,6 +86,8 @@ public class UserDaoTest {
     public void count() {
         dao.deleteAll();
         assertThat(dao.getCount()).isEqualTo(0);
+        
+        dao.add(user1);
 
         assertThrows(DuplicateKeyException.class, () -> {
             dao.add(user1);

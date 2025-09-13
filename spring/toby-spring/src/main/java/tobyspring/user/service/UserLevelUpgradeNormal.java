@@ -3,7 +3,7 @@ package tobyspring.user.service;
 import tobyspring.user.domain.Level;
 import tobyspring.user.domain.User;
 
-public class UserLevelUpgrade implements UserLevelUpgradePolicy {
+public class UserLevelUpgradeNormal implements UserLevelUpgradePolicy {
     public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
     public static final int MIN_RECOMMEND_FOR_GOLD = 30;
     

@@ -14,10 +14,10 @@ public class MockMailSender implements MailSender {
         return requests;
     }
 
-    public void send(SimpleMailMessage mailMessage) throws MailException {
-        requests.add(mailMessage.getTo()[0]);
-    }
-
-    public void send(SimpleMailMessage[] mailMessages) throws MailException {
+    @Override
+    public void send(SimpleMailMessage... simpleMessages) throws MailException {
+        for (SimpleMailMessage message : simpleMessages) {
+            requests.add(message.getTo()[0]);
+        }
     }
 }

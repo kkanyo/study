@@ -31,25 +31,21 @@ public class MockUserDao implements UserDao {
     // 테스트에 사용되지 않는 메소드
     @Override
     public void add(User user) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'add'");
     }
 
     @Override
     public User get(String id) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'get'");
     }
 
     @Override
     public void deleteAll() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAll'");
     }
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getCount'");
     }
 }

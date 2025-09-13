@@ -2,14 +2,11 @@ package learningtest.proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.lang.reflect.Proxy;
-
 import org.junit.jupiter.api.Test;
 
 import tobyspring.learningtest.proxy.Hello;
 import tobyspring.learningtest.proxy.HelloTarget;
 import tobyspring.learningtest.proxy.HelloUppercase;
-import tobyspring.learningtest.proxy.UppercaseHandler;
 
 public class ProxyTest {
     @Test

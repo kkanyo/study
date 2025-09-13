@@ -7,8 +7,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static tobyspring.user.service.UserLevelUpgrade.MIN_LOGCOUNT_FOR_SILVER;
-import static tobyspring.user.service.UserLevelUpgrade.MIN_RECOMMEND_FOR_GOLD;
+import static tobyspring.user.service.UserLevelUpgradeNormal.MIN_LOGCOUNT_FOR_SILVER;
+import static tobyspring.user.service.UserLevelUpgradeNormal.MIN_RECOMMEND_FOR_GOLD;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,18 +31,20 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import tobyspring.user.config.UserDaoConfig;
+import tobyspring.user.config.UserServiceConfig;
 import tobyspring.user.dao.UserDao;
 import tobyspring.user.domain.Level;
 import tobyspring.user.domain.User;
-import tobyspring.user.service.UserLevelUpgrade;
+import tobyspring.user.service.UserLevelUpgradeNormal;
 import tobyspring.user.service.UserLevelUpgradePolicy;
 import tobyspring.user.service.UserService;
 import tobyspring.user.service.UserServiceImpl;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = "classpath:test-applicationContext.xml")
+@ContextConfiguration(classes = {UserDaoConfig.class, UserServiceConfig.class})
 public class UserServiceTest {
-    static class TestUserLevelUpgrade extends UserLevelUpgrade {
+    static class TestUserLevelUpgrade extends UserLevelUpgradeNormal {
         private String id;
 
         private TestUserLevelUpgrade(String id) {
@@ -63,14 +65,14 @@ public class UserServiceTest {
 
     private long startTime;
 
-    @Autowired ApplicationContext context;
-    @Autowired UserService userService;
-    @Autowired UserServiceImpl userServiceImpl;
     @Autowired UserDao userDao;
     @Autowired DataSource dataSource;
+    @Autowired ApplicationContext context;
+    @Autowired UserService userService;
     @Autowired PlatformTransactionManager transactionManager;
     @Autowired MailSender mailSender;
-
+    @Autowired UserServiceImpl userServiceImpl;
+    
     List<User> users;
 
     @BeforeEach
@@ -101,7 +103,7 @@ public class UserServiceTest {
         User userWithLevel = users.get(4);
         User userWithoutLevel = users.get(0);
         userWithoutLevel.setLevel(null);
-
+        
         userService.add(userWithLevel);
         userService.add(userWithoutLevel);
 
@@ -119,7 +121,7 @@ public class UserServiceTest {
         // 컨테이너에서 가져온 UserService 오브젝트는
         // DI를 통해서 많은 의존 오브젝트와 서비스, 외부 환경에 의존하고 있기 때문이다.
         UserServiceImpl userServiceImpl = new UserServiceImpl();
-        userServiceImpl.setUserLevelUpgradePolicy(new UserLevelUpgrade());
+        userServiceImpl.setUserLevelUpgradePolicy(new UserLevelUpgradeNormal());
         
         // 목 오브젝트로 만든 UserDao를 직접 DI 해준다.
         UserDao mockUserDao = mock(UserDao.class);
@@ -143,12 +145,6 @@ public class UserServiceTest {
         List<SimpleMailMessage> mailMessages = mailMessageArg.getAllValues();
         assertThat(mailMessages.get(0).getTo()[0]).isEqualTo(users.get(1).getEmail());   
         assertThat(mailMessages.get(1).getTo()[0]).isEqualTo(users.get(3).getEmail());   
-    }
-
-    @Deprecated
-    private void checkUserAndLevel(User updated, String expectedId, Level expectedLevel) {
-        assertThat(updated.getId()).isEqualTo(expectedId);
-        assertThat(updated.getLevel()).isEqualTo(expectedLevel);
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {

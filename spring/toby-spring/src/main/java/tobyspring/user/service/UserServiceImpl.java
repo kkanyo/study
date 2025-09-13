@@ -2,10 +2,12 @@ package tobyspring.user.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tobyspring.user.dao.UserDao;
@@ -14,11 +16,25 @@ import tobyspring.user.domain.User;
 
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+@Service
 public class UserServiceImpl implements UserService {
-    UserDao userDao;
-    UserLevelUpgradePolicy userLevelUpgradePolicy;
-    MailSender mailSender;
+    private UserDao userDao;
+    private MailSender mailSender;
+    private UserLevelUpgradePolicy userLevelUpgradePolicy;
+
+    /*
+     * TODO
+     * 테스트 코드에서 의존성이 변경되므로 불변성이 보장되지 않아 빈 주입 시 순환 참조의 문제가 발생
+     * final 키워드를 사용하여 불변성을 보장해주면 해결되는 문제
+     * 임시로 @Lazy 어노테이션을 사용함
+     */
+    @Lazy
+    @Autowired
+    public UserServiceImpl(UserDao userDao, MailSender mailSender, UserLevelUpgradePolicy userLevelUpgradePolicy) {
+        this.userDao = userDao;
+        this.mailSender = mailSender;
+        this.userLevelUpgradePolicy = userLevelUpgradePolicy;
+    }
 
     public void add(User user) {
         if (user.getLevel() == null) {

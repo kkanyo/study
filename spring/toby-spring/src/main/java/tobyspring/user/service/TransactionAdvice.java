@@ -9,12 +9,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Setter
+@RequiredArgsConstructor
 public class TransactionAdvice implements MethodInterceptor {
-    PlatformTransactionManager transactionManager;
-    
+    private final PlatformTransactionManager transactionManager;
+
     @Override
     @Nullable
     public Object invoke(@Nonnull MethodInvocation invocation) throws Throwable {

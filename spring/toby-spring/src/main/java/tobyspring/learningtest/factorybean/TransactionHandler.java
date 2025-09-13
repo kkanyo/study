@@ -8,22 +8,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import lombok.Setter;
+
+@Setter
 public class TransactionHandler implements InvocationHandler {
     private Object target;
     private PlatformTransactionManager transactionManager;
+    
+    @SuppressWarnings("unused")
     private String pattern;
-
-    public void setTarget(Object target) {
-        this.target = target;
-    }
-
-    public void setTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-    }
-
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-    }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
