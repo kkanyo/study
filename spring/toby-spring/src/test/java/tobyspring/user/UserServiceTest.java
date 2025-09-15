@@ -13,67 +13,48 @@ import static tobyspring.user.service.UserLevelUpgradeNormal.MIN_RECOMMEND_FOR_G
 import java.util.Arrays;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import tobyspring.user.config.UserDaoConfig;
 import tobyspring.user.config.UserServiceConfig;
+import tobyspring.user.config.UserServiceTestConfig;
 import tobyspring.user.dao.UserDao;
 import tobyspring.user.domain.Level;
 import tobyspring.user.domain.User;
 import tobyspring.user.service.UserLevelUpgradeNormal;
-import tobyspring.user.service.UserLevelUpgradePolicy;
 import tobyspring.user.service.UserService;
 import tobyspring.user.service.UserServiceImpl;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {UserDaoConfig.class, UserServiceConfig.class})
+@ContextConfiguration(classes = {UserDaoConfig.class, UserServiceConfig.class, UserServiceTestConfig.class})
 public class UserServiceTest {
-    static class TestUserLevelUpgrade extends UserLevelUpgradeNormal {
-        private String id;
+    private final UserDao userDao;
+    private final UserService userService;
+    private final UserService testUserService;
 
-        private TestUserLevelUpgrade(String id) {
-            this.id = id;
-        }
-
-        public void upgradeLevel(User user) {
-            if (user.getId().equals(this.id)) {
-                throw new TestUserServiceException();
-            }
-
-            super.upgradeLevel(user);
-        }
-    }
-
-    static class TestUserServiceException extends RuntimeException {
-    }
-
+    private List<User> users;
     private long startTime;
 
-    @Autowired UserDao userDao;
-    @Autowired DataSource dataSource;
-    @Autowired ApplicationContext context;
-    @Autowired UserService userService;
-    @Autowired PlatformTransactionManager transactionManager;
-    @Autowired MailSender mailSender;
-    @Autowired UserServiceImpl userServiceImpl;
-    
-    List<User> users;
+    @Autowired
+    public UserServiceTest(UserDao userDao, 
+            UserService userService,
+            @Qualifier("TestUserService") UserService testUserService) {
+        this.userDao = userDao;
+        this.userService = userService;
+        this.testUserService = testUserService;
+    }
 
     @BeforeEach
     public void setUp() {
@@ -120,16 +101,18 @@ public class UserServiceTest {
         // 고립된 테스트에서는 테스트 대상 오브젝트를 직접 생성하면 된다.
         // 컨테이너에서 가져온 UserService 오브젝트는
         // DI를 통해서 많은 의존 오브젝트와 서비스, 외부 환경에 의존하고 있기 때문이다.
-        UserServiceImpl userServiceImpl = new UserServiceImpl();
-        userServiceImpl.setUserLevelUpgradePolicy(new UserLevelUpgradeNormal());
         
         // 목 오브젝트로 만든 UserDao를 직접 DI 해준다.
         UserDao mockUserDao = mock(UserDao.class);
         when(mockUserDao.getAll()).thenReturn(this.users);
-        userServiceImpl.setUserDao(mockUserDao);
-        
+
         MailSender mockMailSender = mock(MailSender.class);
-        userServiceImpl.setMailSender(mockMailSender);
+        
+        UserServiceImpl userServiceImpl = new UserServiceImpl(
+            mockUserDao,
+            mockMailSender,
+            new UserLevelUpgradeNormal()
+        );
 
         userServiceImpl.upgradeLevels();
 
@@ -161,14 +144,6 @@ public class UserServiceTest {
     @Test
     @DirtiesContext
     public void upgradeAllOrNothing() throws Exception {
-        UserLevelUpgradePolicy testUserLevelUpgradePolicy = new TestUserLevelUpgrade(users.get(3).getId());
-        userServiceImpl.setUserLevelUpgradePolicy(testUserLevelUpgradePolicy);
-        
-        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-        txProxyFactoryBean.setTarget(userServiceImpl);       
-
-        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-
         userDao.deleteAll(); 
 
         for (User user : users) {
@@ -176,11 +151,29 @@ public class UserServiceTest {
         }
 
         try {
-            txUserService.upgradeLevels();
+            testUserService.upgradeLevels();
             fail("TestUserServiceException expected");
         }
         catch (TestUserServiceException e) {}
 
         checkLevelUpgraded(users.get(1), false);
     }
+        
+    public static class TestUserLevelUpgrade extends UserLevelUpgradeNormal {
+        private String id;
+
+        public TestUserLevelUpgrade(String id) {
+            this.id = id;
+        }
+
+        public void upgradeLevel(User user) {
+            if (user.getId().equals(this.id)) {
+                throw new TestUserServiceException();
+            }
+
+            super.upgradeLevel(user);
+        }
+    }
+
+    static class TestUserServiceException extends RuntimeException {}
 }

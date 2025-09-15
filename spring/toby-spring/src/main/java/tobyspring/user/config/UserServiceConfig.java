@@ -1,28 +1,25 @@
 package tobyspring.user.config;
 
-import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
-import org.springframework.aop.support.NameMatchMethodPointcut;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.mail.MailSender;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import lombok.RequiredArgsConstructor;
+import tobyspring.learningtest.jdk.proxy.NameMatchClassMethodPointcut;
 import tobyspring.user.service.DummyMailSender;
 import tobyspring.user.service.TransactionAdvice;
 import tobyspring.user.service.UserLevelUpgradeNormal;
 import tobyspring.user.service.UserLevelUpgradePolicy;
-import tobyspring.user.service.UserServiceImpl;
 
 @Configuration
 @ComponentScan(basePackages = "tobyspring.user.*")
-@RequiredArgsConstructor
 public class UserServiceConfig {
-    private final UserServiceImpl userServiceImpl;
-
     @Bean
+    @Primary
     UserLevelUpgradePolicy userLevelUpgradePolicy() {
         return new UserLevelUpgradeNormal();
     }
@@ -38,8 +35,9 @@ public class UserServiceConfig {
     }
 
     @Bean
-    NameMatchMethodPointcut transactionPointcut() {
-        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+    NameMatchClassMethodPointcut transactionPointcut() {
+        NameMatchClassMethodPointcut pointcut = new NameMatchClassMethodPointcut();
+        pointcut.setMappedClassName("*ServiceImpl");
         pointcut.setMappedNames(new String[] { "upgrade*" } );
         
         return pointcut;
@@ -53,11 +51,7 @@ public class UserServiceConfig {
     }
 
     @Bean
-    ProxyFactoryBean userService() throws ClassNotFoundException {
-        ProxyFactoryBean pfBean = new ProxyFactoryBean();
-        pfBean.setTarget(userServiceImpl);
-        pfBean.setInterceptorNames("transactionAdvisor");
-
-        return pfBean;
+    DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+        return new DefaultAdvisorAutoProxyCreator();
     }
 }
