@@ -26,8 +26,10 @@ import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import tobyspring.user.config.UserDaoConfig;
 import tobyspring.user.config.UserServiceConfig;
@@ -42,6 +44,7 @@ import tobyspring.user.service.UserServiceImpl;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {UserDaoConfig.class, UserServiceConfig.class, UserServiceTestConfig.class})
+@Transactional // 트랜잭션 테스트와 비 트랜잭션 테스트는 클래스를 구분해서 만들도록 권장
 public class UserServiceTest {
     private final UserDao userDao;
     private final UserService userService;
@@ -172,6 +175,15 @@ public class UserServiceTest {
        assertThrows(TransientDataAccessResourceException.class, () -> {
         testUserService.getAll();
        });
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void transactionSync() {
+        userService.deleteAll();
+        userService.add(users.get(0));
+        userService.add(users.get(1));
     }
         
     public static class TestUserLevelUpgrade extends UserLevelUpgradeNormal {
