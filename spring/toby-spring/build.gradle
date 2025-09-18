@@ -32,7 +32,7 @@ dependencies {
 
     implementation("com.mysql:mysql-connector-j:9.3.0")
 
-    implementation("org.springframework.boot:spring-boot-starter-aop:3.5.3")
+    implementation("org.springframework.boot:spring-boot-starter-aop:3.5.5")
 
     implementation("org.springframework:spring-context:6.2.8")
     implementation("org.springframework:spring-context-support:6.2.8")

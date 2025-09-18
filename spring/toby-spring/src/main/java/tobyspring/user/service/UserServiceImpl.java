@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import tobyspring.user.domain.User;
 @RequiredArgsConstructor
 @Primary
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final MailSender mailSender;
