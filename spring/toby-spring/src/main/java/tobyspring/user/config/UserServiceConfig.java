@@ -1,5 +1,8 @@
 package tobyspring.user.config;
 
+import java.util.Properties;
+
+import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.context.annotation.Bean;
@@ -8,10 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.mail.MailSender;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.interceptor.TransactionInterceptor;
 
-import tobyspring.learningtest.jdk.proxy.NameMatchClassMethodPointcut;
 import tobyspring.user.service.DummyMailSender;
-import tobyspring.user.service.TransactionAdvice;
 import tobyspring.user.service.UserLevelUpgradeNormal;
 import tobyspring.user.service.UserLevelUpgradePolicy;
 
@@ -30,16 +32,25 @@ public class UserServiceConfig {
     }
 
     @Bean
-    TransactionAdvice transactionAdvice(PlatformTransactionManager transactionManager) {
-        return new TransactionAdvice(transactionManager);
+    TransactionInterceptor transactionAdvice(PlatformTransactionManager transactionManager) {
+        TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
+        transactionInterceptor.setTransactionManager(transactionManager);
+
+        Properties attributes = new Properties();
+
+        attributes.setProperty("get*", "PROPAGATION_REQUIRED, readOnly");
+        attributes.setProperty("*", "PROPAGATION_REQUIRED");
+        
+        transactionInterceptor.setTransactionAttributes(attributes);
+
+        return transactionInterceptor;
     }
 
     @Bean
-    NameMatchClassMethodPointcut transactionPointcut() {
-        NameMatchClassMethodPointcut pointcut = new NameMatchClassMethodPointcut();
-        pointcut.setMappedClassName("*ServiceImpl");
-        pointcut.setMappedNames(new String[] { "upgrade*" } );
-        
+    AspectJExpressionPointcut transactionPointcut() {
+        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+        pointcut.setExpression("bean(*Service)");
+
         return pointcut;
     }
 

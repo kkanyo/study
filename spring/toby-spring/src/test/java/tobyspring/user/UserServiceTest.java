@@ -1,6 +1,7 @@
 package tobyspring.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
@@ -34,6 +36,7 @@ import tobyspring.user.dao.UserDao;
 import tobyspring.user.domain.Level;
 import tobyspring.user.domain.User;
 import tobyspring.user.service.UserLevelUpgradeNormal;
+import tobyspring.user.service.UserLevelUpgradePolicy;
 import tobyspring.user.service.UserService;
 import tobyspring.user.service.UserServiceImpl;
 
@@ -163,6 +166,13 @@ public class UserServiceTest {
     public void advisorAutoProxyCreator() {
         assertThat(testUserService).isInstanceOf(java.lang.reflect.Proxy.class);
     }
+
+    @Test()
+    public void readOnlyTransactionAttribute() {
+       assertThrows(TransientDataAccessResourceException.class, () -> {
+        testUserService.getAll();
+       });
+    }
         
     public static class TestUserLevelUpgrade extends UserLevelUpgradeNormal {
         private String id;
@@ -181,4 +191,19 @@ public class UserServiceTest {
     }
 
     static class TestUserServiceException extends RuntimeException {}
+
+    public static class TestUserService extends UserServiceImpl {
+        public TestUserService(UserDao userDao, MailSender mailSender, UserLevelUpgradePolicy userLevelUpgradePolicy) {
+            super(userDao, mailSender, userLevelUpgradePolicy);
+        }
+
+        @Override
+        public List<User> getAll() {
+            for (User user: super.getAll()) {
+                super.update(user);
+            }
+
+            return null;
+        }
+    }
 }

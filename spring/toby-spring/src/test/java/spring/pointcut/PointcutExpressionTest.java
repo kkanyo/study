@@ -60,5 +60,6 @@ public class PointcutExpressionTest {
         targetClassPointcutMatches("execution(* hello(..))", true, true, false, false, false, false);
         targetClassPointcutMatches("execution(* hello())", true, false, false, false, false, false);
         targetClassPointcutMatches("execution(* hello(String))", false, true, false, false, false, false);
+        targetClassPointcutMatches("execution(* *..TargetInterface.*(..))", true, false, true, true, true, false);
     }
 }

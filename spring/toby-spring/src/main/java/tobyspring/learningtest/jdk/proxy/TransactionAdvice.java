@@ -1,4 +1,4 @@
-package tobyspring.user.service;
+package tobyspring.learningtest.jdk.proxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
