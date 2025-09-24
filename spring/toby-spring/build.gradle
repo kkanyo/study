@@ -8,6 +8,19 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+
+    // JAXB(XJC) 코드 생성을 위한 플러그인 추가
+    id("com.github.bjornvester.xjc") version "1.8.2"
+}
+
+xjc {
+
+    // 생성될 Java 클래스가 위치할 패키지 이름 지정
+    defaultPackage.set("tobyspring.user.sql.jaxb")
+
+    // xcd 파일이 위치한 디렉토리 지정
+    // 기본값은 'src/main/resources/
+    xsdDir.set(layout.projectDirectory.dir("src/main/resources/xsd"))
 }
 
 repositories {
@@ -38,6 +51,17 @@ dependencies {
     implementation("org.springframework:spring-context-support:6.2.8")
     implementation("org.springframework:spring-jdbc:6.2.8")
     implementation("com.sun.mail:jakarta.mail:2.0.1")
+
+    // JAXB 런타임 의존성 추가
+    // Jakarta XML Binding API
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+
+    // JAXB 구현체 (GalssFish RI)
+    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.5")
+
+    xjc("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+    xjc("org.glassfish.jaxb:jaxb-runtime:4.0.5")
+    xjc("org.glassfish.jaxb:jaxb-xjc:4.0.5")
 
     testImplementation("org.springframework:spring-test:6.2.8")
     testImplementation("org.assertj:assertj-core:3.24.2")
