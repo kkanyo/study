@@ -4,9 +4,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.context.annotation.Primary;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -14,19 +15,21 @@ import tobyspring.user.dao.UserDao;
 import tobyspring.user.sql.jaxb.SqlType;
 import tobyspring.user.sql.jaxb.Sqlmap;
 
-@Primary
 @Service
 public class XmlSqlService implements SqlService {
 
+    @Value("${sql.mapper.file}")
+    private String sqlmapFile;
     private Map<String, String> sqlMap = new HashMap<String, String>();
 
-    public XmlSqlService() {
+    @PostConstruct  // Specify as initialize method of bean
+    public void loadSql() {
         String contextPath = Sqlmap.class.getPackage().getName();
 
         try {
             JAXBContext context = JAXBContext.newInstance(contextPath);
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            InputStream is = UserDao.class.getResourceAsStream("sqlmap.xml");
+            InputStream is = UserDao.class.getResourceAsStream(this.sqlmapFile);
             Sqlmap sqlmap = (Sqlmap)unmarshaller.unmarshal(is);
 
             for (SqlType sql : sqlmap.getSql()) {
@@ -44,11 +47,10 @@ public class XmlSqlService implements SqlService {
         String sql = sqlMap.get(key);
 
         if (sql == null) {
-            throw new SqlRetrievalFailureException("cannot find SQL with + " + key);
+            throw new SqlRetrievalFailureException("cannot find SQL with " + key);
         }
         else {
             return sql;
         }
     }
-    
 }

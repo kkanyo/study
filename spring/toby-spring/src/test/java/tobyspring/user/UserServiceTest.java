@@ -18,22 +18,17 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import tobyspring.user.config.UserDaoConfig;
-import tobyspring.user.config.UserServiceConfig;
-import tobyspring.user.config.UserServiceTestConfig;
 import tobyspring.user.dao.UserDao;
 import tobyspring.user.domain.Level;
 import tobyspring.user.domain.User;
@@ -42,9 +37,8 @@ import tobyspring.user.service.UserLevelUpgradePolicy;
 import tobyspring.user.service.UserService;
 import tobyspring.user.service.UserServiceImpl;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {UserDaoConfig.class, UserServiceConfig.class, UserServiceTestConfig.class})
-@Transactional // 트랜잭션 테스트와 비 트랜잭션 테스트는 클래스를 구분해서 만들도록 권장
+// @Transactional // 트랜잭션 테스트와 비 트랜잭션 테스트는 클래스를 구분해서 만들도록 권장
+@SpringBootTest
 public class UserServiceTest {
     private final UserDao userDao;
     private final UserService userService;
@@ -204,6 +198,7 @@ public class UserServiceTest {
 
     static class TestUserServiceException extends RuntimeException {}
 
+    @Transactional
     public static class TestUserService extends UserServiceImpl {
         public TestUserService(UserDao userDao, MailSender mailSender, UserLevelUpgradePolicy userLevelUpgradePolicy) {
             super(userDao, mailSender, userLevelUpgradePolicy);
