@@ -66,7 +66,6 @@ public class DynamicProxyTest {
     }
 
     static class UppercaseAdvice implements MethodInterceptor {
-        @SuppressWarnings("null")
         @Override
         @Nullable
         public Object invoke(@Nonnull MethodInvocation invocation) throws Throwable {

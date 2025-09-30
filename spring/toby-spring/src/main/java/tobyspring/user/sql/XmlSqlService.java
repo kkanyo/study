@@ -4,22 +4,22 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
-import tobyspring.user.dao.UserDao;
+import lombok.RequiredArgsConstructor;
+import tobyspring.user.properties.SqlProperties;
 import tobyspring.user.sql.jaxb.SqlType;
 import tobyspring.user.sql.jaxb.Sqlmap;
 
+@RequiredArgsConstructor
 @Service
 public class XmlSqlService implements SqlService {
 
-    @Value("${sql.mapper.file}")
-    private String sqlmapFile;
+    private final SqlProperties sqlProperties;
     private Map<String, String> sqlMap = new HashMap<String, String>();
 
     @PostConstruct  // Specify as initialize method of bean
@@ -29,7 +29,7 @@ public class XmlSqlService implements SqlService {
         try {
             JAXBContext context = JAXBContext.newInstance(contextPath);
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            InputStream is = UserDao.class.getResourceAsStream(this.sqlmapFile);
+            InputStream is = getClass().getClassLoader().getResourceAsStream(sqlProperties.fileName());
             Sqlmap sqlmap = (Sqlmap)unmarshaller.unmarshal(is);
 
             for (SqlType sql : sqlmap.getSql()) {
