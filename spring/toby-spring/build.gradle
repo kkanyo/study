@@ -8,6 +8,20 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'io.spring.dependency-management' version '1.1.5'
+    // JAXB(XJC) 코드 생성을 위한 플러그인 추가
+    id("com.github.bjornvester.xjc") version "1.8.2"
+}
+
+xjc {
+
+    // 생성될 Java 클래스가 위치할 패키지 이름 지정
+    defaultPackage.set("tobyspring.user.sql.jaxb")
+
+    // xcd 파일이 위치한 디렉토리 지정
+    // 기본값은 'src/main/resources/
+    xsdDir.set(layout.projectDirectory.dir("src/main/resources/xsd"))
 }
 
 repositories {
@@ -16,30 +30,36 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
-    testImplementation libs.junit.jupiter
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok")
+	testCompileOnly("org.projectlombok:lombok")
+	testAnnotationProcessor("org.projectlombok:lombok")
 
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Spring Boot
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+
+    // MySQL Driver
+    implementation("com.mysql:mysql-connector-j")
+
+    // JAXB runtime dependancy
+    // Jakarta XML binding API
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+    // JAXB implementation (GalssFish RI)
+    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.5")
+    
+    xjc("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+    xjc("org.glassfish.jaxb:jaxb-runtime:4.0.5")
+    xjc("org.glassfish.jaxb:jaxb-xjc:4.0.5")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.assertj:assertj-core:3.24.2")
 
     // This dependency is used by the application.
     implementation libs.guava
-
-    compileOnly("org.projectlombok:lombok:1.18.38")
-	annotationProcessor("org.projectlombok:lombok:1.18.38")
-	
-	testCompileOnly("org.projectlombok:lombok:1.18.38")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
-
-    implementation("com.mysql:mysql-connector-j:9.3.0")
-
-    implementation("org.springframework:spring-context:6.2.8")
-    implementation("org.springframework:spring-context-support:6.2.8")
-    implementation("org.springframework:spring-jdbc:6.2.8")
-    implementation("com.sun.mail:jakarta.mail:2.0.1")
-
-    testImplementation("org.springframework:spring-test:6.2.8")
-    testImplementation("org.assertj:assertj-core:3.24.2")
-    testImplementation("org.mockito:mockito-core:5.+")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

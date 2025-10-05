@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost/toby-spring
+    username: root
+    password: password
+
+sql-mapper:
+  file-name: sqlmap.xml
