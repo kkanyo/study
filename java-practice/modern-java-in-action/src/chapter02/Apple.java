@@ -1,7 +1,11 @@
 package chapter02;
 
+import java.util.List;
+
 public class Apple {
-    enum Color { RED, GREEN }
+    enum Color {
+        RED, GREEN
+    }
 
     Color color;
     Integer weight;
@@ -25,5 +29,13 @@ public class Apple {
 
     public Integer getWeight() {
         return weight;
+    }
+
+    public static void prettyPrintApple(List<Apple> inventory, AppleFormatter formatter) {
+        for (Apple apple : inventory) {
+            String output = formatter.accept(apple);
+
+            System.out.println(output);
+        }
     }
 }
