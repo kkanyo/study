@@ -2,6 +2,7 @@ package chapter02;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import chapter02.Apple.Color;
 

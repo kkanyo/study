@@ -7,7 +7,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.function.Predicate;
 
 import chapter02.Apple.Color;
 
@@ -69,6 +68,27 @@ public class AppleTest {
         for (Integer number : evenNumbers) {
             System.out.printf("%d ", number);
         }
+        System.out.println("\n");
+
+        // {@link Comparator}
+        System.out.println("Test Comparator");
+        inventory.sort((Apple a1, Apple a2) -> a1.getWeight().compareTo(a2.getWeight()));
+        Apple.prettyPrintApple(inventory, new AppleSimpleFormatter());
         System.out.println();
+
+        // {@link Runnable}
+        System.out.println("Test Runnable");
+        Thread t = new Thread(() -> System.out.println("Hello, world!"));
+        t.run();
+        System.out.println();
+
+        // {@link Callable}
+        // {@link ExecutorService} 인터페이스는 태스크 제추과 실행 과정의 연관성을 끊어준다.
+        // ExecutorService를 이용하면 태스크를 스레드 풀로 보내고 결과를 {@link Future}로 저장할 수 있다.
+        System.out.println("Test Callable");
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.execute(() -> System.out.println("Hello, world!"));
+        Future<String> threadName = executorService.submit(() -> Thread.currentThread().getName());
+        threadName.get();
     }
 }
