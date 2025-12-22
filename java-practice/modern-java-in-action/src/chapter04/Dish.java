@@ -1,13 +1,15 @@
 package chapter04;
 
 public class Dish {
-    public enum Type { MEAT, FISH, OTHER }
+    public enum Type {
+        MEAT, FISH, OTHER
+    }
 
     private final String name;
     private final boolean vegetarian;
     private final int calories;
     private final Type type;
-    
+
     public Dish(String name, boolean vegetarian, int calories, Type type) {
         this.name = name;
         this.vegetarian = vegetarian;
@@ -34,9 +36,5 @@ public class Dish {
     @Override
     public String toString() {
         return "Dish [name=" + name + ", calories=" + calories + "]";
-    }
-
-    public void printDish() {
-        System.out.println(toString());
     }
 }
