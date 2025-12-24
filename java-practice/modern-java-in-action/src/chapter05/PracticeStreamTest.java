@@ -5,5 +5,7 @@ public class PracticeStreamTest {
         Filtering.test();
 
         Mapping.test();
+
+        SearchingMatching.test();
     }
 }
