@@ -7,5 +7,7 @@ public class PracticeStreamTest {
         Mapping.test();
 
         SearchingMatching.test();
+
+        Reducing.test();
     }
 }
