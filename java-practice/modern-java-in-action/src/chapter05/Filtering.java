@@ -10,7 +10,7 @@ import static chapter04.Dish.menu;
 public class Filtering {
     public static void test() {
         // ** Filtering **
-        System.out.println("Test filtering");
+        System.out.println("*** Test filtering ***");
 
         // Predicate
         menu.stream()
@@ -88,8 +88,7 @@ public class Filtering {
                 .filter(dish -> dish.getType().equals(Dish.Type.MEAT))
                 // .takeWhile(dish -> dish.getType().equals(Dish.Type.MEAT))
                 .limit(2)
-
                 .forEach(dish -> System.out.printf("type of %s is %s\n", dish.getName(), dish.getType()));
-
+        System.out.println();
     }
 }
