@@ -1,8 +1,9 @@
 package chapter04;
 
-import java.util.Arrays;
+import static chapter04.Dish.menu;
+
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Collectors;;
 
 /**
  * {@link java.util.stream.Stream}
@@ -103,17 +104,6 @@ import java.util.stream.Collectors;
 public class StreamTest {
     @SuppressWarnings("unused")
     public static void main(String[] args) {
-        List<Dish> menu = Arrays.asList(
-                new Dish("prok", false, 800, Dish.Type.MEAT),
-                new Dish("beef", false, 700, Dish.Type.MEAT),
-                new Dish("chicken", false, 400, Dish.Type.MEAT),
-                new Dish("french fries", true, 530, Dish.Type.OTHER),
-                new Dish("rice", true, 350, Dish.Type.OTHER),
-                new Dish("season fruit", false, 120, Dish.Type.OTHER),
-                new Dish("pizza", false, 550, Dish.Type.OTHER),
-                new Dish("prawns", false, 300, Dish.Type.FISH),
-                new Dish("salmon", false, 450, Dish.Type.FISH));
-
         /**
          * (여러 데모, 디버깅 기법과 마찬가지로 제품 코드에는 출력 코드를 추가하지 않는 것이 좋다.)
          * 
