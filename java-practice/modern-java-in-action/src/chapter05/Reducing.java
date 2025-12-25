@@ -1,11 +1,9 @@
 package chapter05;
 
+import static chapter04.Dish.menu;
+
 import java.util.Arrays;
 import java.util.List;
-
-import chapter04.Dish;
-
-import static chapter04.Dish.menu;
 
 /**
  * Interger 같은 결과가 나올 때까지 스트림의 모든 요소를 반복적으로 처리하는 질의를
