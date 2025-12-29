@@ -26,6 +26,8 @@ public class CollectStreamTest {
 
     public static void main(String[] args) {
         Summarizing.test();
+
+        Grouping.test();
     }
 
 }
