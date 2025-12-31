@@ -40,12 +40,18 @@ public class Partitioning {
                                 groupingBy(Dish::getType)));
         System.out.printf("Vegerian dishes by type: %s\n\n", vegetarianDishesByType);
 
-        System.out.printf("Partitioned prime numbers: %s\n\n", IntStream.rangeClosed(2, 100).boxed()
+        System.out.printf("Partitioned prime numbers: %s\n\n", partitionPrimes(100));
+    }
+
+    public static boolean isPrime(int candidate) {
+        int candidateRoot = (int) Math.sqrt((double) candidate);
+        return IntStream.rangeClosed(2, candidateRoot)
+                .noneMatch(i -> candidate % i == 0);
+    }
+
+    public static Map<Boolean, List<Integer>> partitionPrimes(int n) {
+        return IntStream.rangeClosed(2, n).boxed()
                 .collect(
-                        partitioningBy(candidate -> {
-                            int candidateRoot = (int) Math.sqrt((double) candidate);
-                            return IntStream.rangeClosed(2, candidateRoot)
-                                    .noneMatch(i -> candidate % i == 0);
-                        })));
+                        partitioningBy(candidate -> isPrime(candidate)));
     }
 }
