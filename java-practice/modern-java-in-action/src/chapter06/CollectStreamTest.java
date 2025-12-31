@@ -28,6 +28,8 @@ public class CollectStreamTest {
         Summarizing.test();
 
         Grouping.test();
+
+        Partitioning.test();
     }
 
 }
