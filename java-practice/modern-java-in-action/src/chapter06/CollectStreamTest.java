@@ -30,6 +30,8 @@ public class CollectStreamTest {
         Grouping.test();
 
         Partitioning.test();
+
+        ToListCollector.test();
     }
 
 }
