@@ -6,6 +6,10 @@ public class ParallelStreamTest {
 
     public static void main(String[] args) {
         ParallelStream.test();
+
+        System.out.println(
+                "ForkJoin sum done in" + measurePerf(
+                        ForkJoinSumCalculator::forkJoinSum, 10_000_000L) + " msecs");
     }
 
     public static <T, R> long measurePerf(Function<T, R> f, T input) {
@@ -25,4 +29,5 @@ public class ParallelStreamTest {
 
         return fastest;
     }
+
 }
