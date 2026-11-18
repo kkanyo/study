@@ -44,13 +44,13 @@ public class TodoController {
     }
 
     // 경로 변수(Path Variable)를 통해 `/{id}` 값을 전달받음
-    @GetMapping("/{id]")
+    @GetMapping("/{id}")
     @Operation(summary = "작업 조회", description = "ID로 작업 조회")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "성공"),
         @ApiResponse(responseCode = "404", description = "작업 없음")
     })
-    public ResponseEntity<Todo> getTodoById(@PathVariable Long id) {
+    public ResponseEntity<Todo> getTodoById(@PathVariable("id") Long id) {
         Todo todo = todoService.findById(id);
 
         if (todo == null) {
@@ -79,7 +79,7 @@ public class TodoController {
         @ApiResponse(responseCode = "200", description = "수정됨"),
         @ApiResponse(responseCode = "404", description = "작업 없음")
     })
-    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody Todo todo) {
+    public ResponseEntity<Todo> updateTodo(@PathVariable("id") Long id, @RequestBody Todo todo) {
         Todo existingTodo = todoService.findById(id);
         if (existingTodo == null) {
             return ResponseEntity.notFound().build();
@@ -96,7 +96,7 @@ public class TodoController {
         @ApiResponse(responseCode = "204", description = "내용 없음"),
         @ApiResponse(responseCode = "404", description = "작업 없음")
     })
-    public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTodo(@PathVariable("id") Long id) {
         Todo todo = todoService.findById(id);
         if (todo == null) {
             return ResponseEntity.notFound().build();
